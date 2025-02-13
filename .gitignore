@@ -1,3 +1,5 @@
 venv
 sentiment-old.py
 .env
+
+./frontend/node_modules
