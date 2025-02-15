@@ -14,12 +14,14 @@ import os
 from dotenv import load_dotenv
 # Create APIs
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 # Parse ISO 8601 format time for video duration
 import isodate
 
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
 classifier = pipeline("text-classification", model="unitary/toxic-bert")
 app = Flask(__name__)
+CORS(app)
 
 load_dotenv()
 # YouTube API key
@@ -97,14 +99,14 @@ def analyze():
     comments = []
     nextPageToken = None
     while len(comments) < num_of_comments:
-        request = youtube.commentThreads().list(
+        requestt = youtube.commentThreads().list(
             part='snippet',
             videoId=video_id,
             order='relevance',
             maxResults=100,  # You can fetch up to 100 comments per request
             pageToken=nextPageToken
         )
-        response = request.execute()
+        response = requestt.execute()
         for item in response['items']:
             comment = item['snippet']['topLevelComment']['snippet']
             # print(comment)
