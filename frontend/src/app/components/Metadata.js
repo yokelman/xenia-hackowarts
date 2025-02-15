@@ -2,6 +2,10 @@
 import React, { useState } from 'react'
 
 const Metadata = (props) => {
+
+  function capitalizeFirstLetter(str) {
+    return str.replace(/^\w/, (c) => c.toUpperCase());
+  }
   
   return (
     <div className="p-4 bg-neutral-900 col-span-12 md:col-span-4 rounded-xl print:col-span-6 min-h-[450px]">
@@ -10,7 +14,7 @@ const Metadata = (props) => {
         <ul className="flex flex-col justify-center h-full">
         {Object.entries(props.data).map(([key, value]) => (
           <li key={key}>
-            <span className="font-black text-xl first-letter:uppercase">{key.replace(/([A-Z])/g, " $1")}:</span> <span className='text-xl font-light text-neutral-500'>{value}</span>
+            <span className="font-black text-xl first-letter:uppercase">{capitalizeFirstLetter(key)}:</span> <span className='text-xl font-light text-neutral-500'>{value}</span>
           </li>
         ))}
       </ul>

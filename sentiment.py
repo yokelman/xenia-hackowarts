@@ -4,6 +4,7 @@
 # Hugging face transformers for using sentiment models
 from transformers import pipeline
 # Module for YouTube's API
+from googleapiclient.errors import HttpError
 from googleapiclient.discovery import build
 # Regex module
 import re
@@ -103,14 +104,17 @@ def analyze():
     # Variable to get data for specifically first/top comment
     first=True
 
-    while len(comments) < num_of_comments:
-        response = youtube.commentThreads().list(
-            part='snippet',
-            videoId=video_id,
-            order='relevance',
-            maxResults=100,  # You can fetch up to 100 comments per request
-            pageToken=nextPageToken
-        ).execute()
+    while len(comments) < int(num_of_comments):
+        try:
+            response = youtube.commentThreads().list(
+                part='snippet',
+                videoId=video_id,
+                order='relevance',
+                maxResults=100,  # You can fetch up to 100 comments per request
+                pageToken=nextPageToken
+            ).execute()
+        except HttpError:
+            return jsonify({"status": 404, "message": "Comments are turned off on this video!"})
         for item in response['items']:
             comment = item['snippet']['topLevelComment']['snippet']
             # print(comment)
