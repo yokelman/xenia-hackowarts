@@ -114,7 +114,7 @@ def analyze():
                 pageToken=nextPageToken
             ).execute()
         except HttpError:
-            return jsonify({"status": 404, "message": "Comments are turned off on video!"})
+            return jsonify({"status": 404, "message": "Comments are turned off on this video!"})
         for item in response['items']:
             comment = item['snippet']['topLevelComment']['snippet']
             # print(comment)
