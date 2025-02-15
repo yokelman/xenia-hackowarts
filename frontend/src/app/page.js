@@ -5,10 +5,10 @@ import About from "./components/About";
 
 export default function Home() {
   return (
-   <div className="px-10 sm:px-40 ">
+   <div className="px-10 sm:px-40">
     {/* <Toolbar /> */}
     <Hero />
-    <About />
+    {/* <About /> */}
    </div>
   );
 }

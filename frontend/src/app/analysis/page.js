@@ -29,9 +29,12 @@ let [meta, setMeta] = useState({
     const match = url.match(regExp);
     return match ? match[1] : null;
 }
-
+function isValidYouTubeUrl(url) {
+  const regex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|shorts\/)|youtu\.be\/)[\w-]{11}(&.*)?$/;
+  return regex.test(url);
+}
   const analyze = () => {
-    console.log(getYouTubeID(url))
+    if(isValidYouTubeUrl(url)){
     fetch('http://localhost:5000/metadata', {
       method: "POST", 
       headers: {
@@ -62,7 +65,8 @@ let [meta, setMeta] = useState({
   body: JSON.stringify({ 'video_id': getYouTubeID(url) , 'num_of_comments':100}) // Convert object to JSON string
 }).then(e => e.json()).then(e => {
   console.log(e)
-})
+})}
+
   }
 
   return (
