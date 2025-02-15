@@ -206,4 +206,4 @@ def analyze():
         "commentLabels": commentLabels
     })
 
-app.run()
+app.run(threaded=False)
