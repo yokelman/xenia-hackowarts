@@ -16,7 +16,7 @@ export function Graph(props) {
       
       const chartConfig = {
         value: {
-          label: "Sentiment Score",
+          label: "Value: ",
           color: "#2563eb",
         },
       }

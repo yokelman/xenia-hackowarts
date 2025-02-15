@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from 'react'
 
 const Metadata = (props) => {
@@ -9,7 +10,7 @@ const Metadata = (props) => {
         <ul className="flex flex-col justify-center h-full">
         {Object.entries(props.data).map(([key, value]) => (
           <li key={key}>
-            <span className="font-black text-xl">{key.replace(/([A-Z])/g, " $1")}:</span> <span className='text-xl font-light text-neutral-500'>{value}</span>
+            <span className="font-black text-xl first-letter:uppercase">{key.replace(/([A-Z])/g, " $1")}:</span> <span className='text-xl font-light text-neutral-500'>{value}</span>
           </li>
         ))}
       </ul>

@@ -23,7 +23,7 @@ const RatingGraph = (props) => {
       
       const chartConfig = {
         positivityRating: {
-          label: "positivityRating",
+          label: "positivity Rating:  ",
           color: "#2563eb",
         },
         mobile: {

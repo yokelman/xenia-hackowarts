@@ -13,6 +13,7 @@ const page = () => {
   const [url, setUrl] = useState("")
   const [analysed, setAnalysed] = useState(false)
   const [isLoading, setLoading] = useState(false)
+  const [comments, setComments] = useState(1000)
   const [data, setData] = useState({
     commentLabels:{
       negative:0,
@@ -77,7 +78,7 @@ function isValidYouTubeUrl(url) {
   headers: {
     "Content-Type": "application/json"
   },
-  body: JSON.stringify({ 'video_id': getYouTubeID(url) , 'num_of_comments':100}) // Convert object to JSON string
+  body: JSON.stringify({ 'video_id': getYouTubeID(url) , 'num_of_comments':comments}) // Convert object to JSON string
 }).then(e => e.json()).then(e => {
   setLoading(false)
   setData({
@@ -100,6 +101,7 @@ function isValidYouTubeUrl(url) {
           <h1 className="text-7xl font-extralight text-center my-10">All it takes is <span className="underline decoration-purple-500">one click</span> </h1>
           <div className=" flex flex-col md:flex-row gap-2">
             <input type="text" value={url} onChange={e => setUrl(e.target.value)} className="text-lg bg-neutral-900 p-6 rounded-xl w-full" placeholder="Put the URL of the video here ...." />
+            <input type="text" value={comments} onChange={e => setComments(e.target.value)} className="text-lg bg-neutral-900 p-6 rounded-xl " placeholder="Put the number of comments here ...." />
 
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={analyze}>Analyze!</button>
           </div>
