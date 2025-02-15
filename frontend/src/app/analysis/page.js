@@ -108,7 +108,20 @@ function isValidYouTubeUrl(url) {
         :
         <div className=" py-4">
           <div className="py-2 flex justify-end gap-2 controls pb-10">
-            <button className="p-3 px-6 bg-neutral-900 text-white font-black rounded-xl text-lg hover:bg-neutral-800 transition-all" onClick={() => setAnalysed(false)}>Analyse another video</button>
+            <button className="p-3 px-6 bg-neutral-900 text-white font-black rounded-xl text-lg hover:bg-neutral-800 transition-all" onClick={() => {
+              setData({
+                commentLabels:{
+                  negative:0,
+                  neutral:0,
+                  positive:0
+                },
+                finalRating:0,
+                ratings:[],
+                topComment:null
+              })
+
+              setAnalysed(false)
+              }}>Analyse another video</button>
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={() => exportAsPDF()}>Export as PDF</button>
            </div>
           <div className="report grid grid-cols-12 gap-2">

@@ -9,21 +9,21 @@ import Loader from "./Loader"
 const RatingGraph = (props) => {
 
     const chartData = [
-        { label: "1",  desktop: props.data[0]},
-        { label: "2",  desktop: props.data[1]},
-        { label: "3",  desktop: props.data[2]},
-        { label: "4",  desktop: props.data[3]},
-        { label: "5",  desktop: props.data[4]},
-        { label: "6",  desktop: props.data[5]},
-        { label: "7",  desktop: props.data[6]},
-        { label: "8",  desktop: props.data[7]},
-        { label: "9",  desktop: props.data[8]},
-        { label: "10", desktop: props.data[9]}
+        { label: "1",  positivityRating: props.data[0]},
+        { label: "2",  positivityRating: props.data[1]},
+        { label: "3",  positivityRating: props.data[2]},
+        { label: "4",  positivityRating: props.data[3]},
+        { label: "5",  positivityRating: props.data[4]},
+        { label: "6",  positivityRating: props.data[5]},
+        { label: "7",  positivityRating: props.data[6]},
+        { label: "8",  positivityRating: props.data[7]},
+        { label: "9",  positivityRating: props.data[8]},
+        { label: "10", positivityRating: props.data[9]}
       ]
       
       const chartConfig = {
-        desktop: {
-          label: "Desktop",
+        positivityRating: {
+          label: "positivityRating",
           color: "#2563eb",
         },
         mobile: {
@@ -48,10 +48,10 @@ const RatingGraph = (props) => {
             tickFormatter={(value) => value.slice(0, 8)}
           />
           <Tooltip 
-            content={<ChartTooltipContent labelKey="label" nameKey="desktop" />} 
+            content={<ChartTooltipContent labelKey="label" nameKey="positivityRating" />} 
             cursor={{ stroke: 'gray', strokeWidth: 1 }}
           />
-          <Line dataKey="desktop" stroke="yellow" radius={4} />
+          <Line dataKey="positivityRating" stroke="yellow" radius={4} />
         </LineChart>
       </ChartContainer>}
     </div>
