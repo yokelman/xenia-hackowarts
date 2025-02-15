@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${lg.variable} antialiased`}
+        className={`${lg.variable} antialiased bg-black text-white print:bg-black `}
       >
         {children}
       </body>

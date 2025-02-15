@@ -2,8 +2,8 @@ import Link from "next/link"
 
 const Toolbar = () => {
   return (
-    <div className="py-4 flex items-center justify-between">
-      <div className="logo text-3xl">LOGO</div>
+    <div className="py-4 flex items-center justify-between toolbar">
+      <div className="logo text-3xl"><img src="/logo.svg" className="w-12"></img></div>
       <div className="flex items-center">
         <div className="flex items-center hidden md:block">
       <Link href={`/`} className="mr-10 border-b-4 border-b-transparent hover:border-b-purple-500 transition-all ">Home</Link>
