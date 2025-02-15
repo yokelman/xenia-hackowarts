@@ -2,22 +2,18 @@
 
 import { Bar, BarChart, XAxis } from "recharts"
 
-import { ChartConfig, ChartContainer } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 const chartData = [
-  { label: "Negative", desktop: 186, mobile: 80 },
-  { label: "Neutral", desktop: 305, mobile: 200 },
-  { label: "Positive", desktop: 237, mobile: 120 }
+  { label: "Negative", value: 186},
+  { label: "Neutral",  value: 305 },
+  { label: "Positive", value: 237 }
 ]
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  value: {
+    label: "value",
     color: "#2563eb",
-  },
-  mobile: {
-    label: "Mobile",
-    color: "#60a5fa",
   },
 } 
 
@@ -35,7 +31,10 @@ export function Graph() {
       axisLine={false}
       tickFormatter={(value) => value.slice(0, 8)}
     />
-        <Bar dataKey="desktop" fill="white" radius={4} />
+        <Bar dataKey="value" fill="white" radius={4} />
+        <ChartTooltip wrapperStyle={{ transition: "none" }} 
+  content={<ChartTooltipContent labelKey="label" nameKey="value" />}
+/>
         {/* <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} /> */}
       </BarChart>
     </ChartContainer>
