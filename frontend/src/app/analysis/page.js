@@ -2,6 +2,9 @@
 import { useState } from "react"
 import Toolbar from "../components/Toolbar"
 import { Graph } from "../components/Graph"
+import TopComment from "../components/TopComment"
+import Metadata from "../components/Metadata"
+import RatingGraph from "../components/RatingGraph"
 
 
 const page = () => {
@@ -25,12 +28,18 @@ const page = () => {
           </div>
         </div> :
         <div className=" py-4">
-          <div className="py-2 flex justify-end gap-2 controls">
+          <div className="py-2 flex justify-end gap-2 controls pb-10">
             <button className="p-3 px-6 bg-neutral-900 text-white font-black rounded-xl text-lg hover:bg-neutral-800 transition-all">Analyse another video</button>
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={() => exportAsPDF()}>Export as PDF</button>
            </div>
-          <div className="report grid grid-cols-12">
+          <div className="report grid grid-cols-12 gap-2">
+            <div className="video col-span-8 print:col-span-6 p-4 bg-neutral-900 rounded-xl">
+            <iframe className="w-full h-full rounded-xl" src="https://www.youtube.com/embed/wjoecJrdvWI?si=oz9xn41AsqkXDpaR" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe> 
+            </div>
+            <Metadata />
             <Graph />
+            <RatingGraph />
+            <TopComment />
           </div>
         </div>
       }
