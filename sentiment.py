@@ -18,7 +18,7 @@ from flask_cors import CORS
 # Parse ISO 8601 format time for video duration
 import isodate
 
-sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment")
+sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment", top_k=None)
 classifier = pipeline("text-classification", model="unitary/toxic-bert")
 app = Flask(__name__)
 CORS(app)
@@ -75,8 +75,6 @@ def analyze():
     num_of_comments=data.get('num_of_comments')
     # YouTube video id
     video_id=data.get('video_id')
-    # Final sentiment score
-    avg_sentiment = 0
 
     print("video id: " + video_id)
 
@@ -97,21 +95,34 @@ def analyze():
     # Fetch comments
     print("Fetching Comments...")
     comments = []
+    # 0th index is for rating 1 and so on till 9th index
+    ratings = [0 for i in range(10)]
+    commentLabels = {"LABEL_0": 0, "LABEL_1": 0, "LABEL_2": 0}
+    topComment = {"comment": "", "rating": 0, "likeCount": 0, "authorDisplayName": "", "authorProfileImageUrl": "", "authorChannelUrl": ""}
     nextPageToken = None
+    # Variable to get data for specifically first/top comment
+    first=True
+
     while len(comments) < num_of_comments:
-        requestt = youtube.commentThreads().list(
+        response = youtube.commentThreads().list(
             part='snippet',
             videoId=video_id,
             order='relevance',
             maxResults=100,  # You can fetch up to 100 comments per request
             pageToken=nextPageToken
-        )
-        response = requestt.execute()
+        ).execute()
         for item in response['items']:
             comment = item['snippet']['topLevelComment']['snippet']
             # print(comment)
             # Check if the comment is not from the video uploader
             if comment['authorChannelId']['value'] != uploader_channel_id:
+                if first:
+                    first=False
+                    topComment['comment']=comment['textDisplay']
+                    topComment['likeCount']=item['snippet']['topLevelComment']['snippet']['likeCount']
+                    topComment['authorDisplayName']=item['snippet']['topLevelComment']['snippet']['authorDisplayName']
+                    topComment['authorProfileImageUrl']=item['snippet']['topLevelComment']['snippet']['authorProfileImageUrl']
+                    topComment['authorChannelUrl']=item['snippet']['topLevelComment']['snippet']['authorChannelUrl']
                 comments.append(comment['textDisplay'])
         nextPageToken = response.get('nextPageToken')
         if not nextPageToken:
@@ -163,17 +174,36 @@ def analyze():
 
     # BATCH PROCESSING FOR MODEL 2
     sentiments = sentiment_pipeline(comments, truncation=True, padding=True, max_length=512, batch_size=4)
-    for sentiment in sentiments:
-        if sentiment['label'] == 'LABEL_0':
-            mult=-1
-        elif sentiment['label'] == 'LABEL_2':
-            mult=1
-        else:
-            mult=0
-        avg_sentiment += sentiment['score'] * mult
-    avg_sentiment /= len(comments)
 
-    print("Sentiment score:", avg_sentiment)
-    print("Total time taken:", time.time()-time1)
+    first=True
+    for sentiment in sentiments:
+        # Initialize scores for each sentiment
+        # print(sentiment)
+        positive = neutral = negative = 0
+        # Loop through the results to extract the scores
+        for item in sentiment:
+            label = item['label']
+            score = item['score']
+            if label == 'LABEL_2':
+                positive = score
+            elif label == 'LABEL_1':
+                neutral = score
+            elif label == 'LABEL_0':
+                negative = score
+        rating = round(10 * positive + 5 * neutral + 1 * negative)
+        if first:
+            first = False
+            topComment['rating']=rating
+        commentLabels[sentiment[0]['label']] += 1
+        ratings[rating-1] += 1
+
+    final_rating=sum((i + 1) * count for i, count in enumerate(ratings))/sum(ratings)
+    return jsonify({
+        "ratings": ratings, 
+        "final_rating": final_rating, 
+        "timeTaken": time.time()-time1, 
+        "topComment": topComment,
+        "commentLabels": commentLabels
+    })
 
 app.run()
