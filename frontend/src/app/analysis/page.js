@@ -5,11 +5,25 @@ import { Graph } from "../components/Graph"
 import TopComment from "../components/TopComment"
 import Metadata from "../components/Metadata"
 import RatingGraph from "../components/RatingGraph"
+import Loader from "../components/Loader"
+import FinalRating from "../components/FinalRating"
 
 
 const page = () => {
   const [url, setUrl] = useState("")
   const [analysed, setAnalysed] = useState(false)
+  const [isLoading, setLoading] = useState(false)
+  const [data, setData] = useState({
+    commentLabels:{
+      negative:0,
+      neutral:0,
+      positive:0
+    },
+    finalRating:0,
+    ratings:[],
+    topComment:null
+  })
+
 let [meta, setMeta] = useState({
         duration:100,
         channelId:100,
@@ -34,6 +48,7 @@ function isValidYouTubeUrl(url) {
   return regex.test(url);
 }
   const analyze = () => {
+  setLoading(true)
     if(isValidYouTubeUrl(url)){
     fetch('http://localhost:5000/metadata', {
       method: "POST", 
@@ -64,8 +79,16 @@ function isValidYouTubeUrl(url) {
   },
   body: JSON.stringify({ 'video_id': getYouTubeID(url) , 'num_of_comments':100}) // Convert object to JSON string
 }).then(e => e.json()).then(e => {
-  console.log(e)
+  setLoading(false)
+  setData({
+    commentLabels:e.commentLabels,
+    finalRating:e.final_rating,
+    ratings:e.ratings,
+    topComment:e.topComment
+  })
+
 })}
+
 
   }
 
@@ -80,20 +103,23 @@ function isValidYouTubeUrl(url) {
 
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={analyze}>Analyze!</button>
           </div>
-        </div> :
+          {isLoading?<Loader/>:<div></div>}
+        </div> 
+        :
         <div className=" py-4">
           <div className="py-2 flex justify-end gap-2 controls pb-10">
-            <button className="p-3 px-6 bg-neutral-900 text-white font-black rounded-xl text-lg hover:bg-neutral-800 transition-all">Analyse another video</button>
+            <button className="p-3 px-6 bg-neutral-900 text-white font-black rounded-xl text-lg hover:bg-neutral-800 transition-all" onClick={() => setAnalysed(false)}>Analyse another video</button>
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={() => exportAsPDF()}>Export as PDF</button>
            </div>
           <div className="report grid grid-cols-12 gap-2">
-            <div className="video col-span-8 print:col-span-6 p-4 bg-neutral-900 rounded-xl">
+            <div className="video col-span-12 md:col-span-8 print:col-span-6 p-4 bg-neutral-900 rounded-xl">
             <iframe className="w-full h-full rounded-xl" src={`https://www.youtube.com/embed/${getYouTubeID(url)}?si=oz9xn41AsqkXDpaR`} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe> 
             </div>
             <Metadata data={meta}/>
-            <Graph />
-            <RatingGraph />
-            <TopComment />
+            <Graph data={data.commentLabels}/>
+            <RatingGraph data={data.ratings}/>
+            <TopComment data={data.topComment}/>
+            <FinalRating data={data.finalRating}/>
           </div>
         </div>
       }
