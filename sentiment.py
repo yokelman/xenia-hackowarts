@@ -146,10 +146,12 @@ def analyze():
     comments=relevant_comments
 
     toxic_comments = []
+    toxic_scores = []
     results = classifier(comments, truncation=True, padding=True, max_length=512, batch_size=4)
     for result in results:
         if result['label'] == 'toxic' and result['score'] > 0.5:  # If the comment is toxic
             toxic_comments.append(comment)
+            toxic_scores.append(result['score'])
 
     # CALCULATING SENTIMENTS ALL AT ONCE FOR MODEL 1
     # sentiments = sentiment_pipeline(comments)
@@ -228,7 +230,7 @@ def analyze():
         "timeTaken": time.time()-time1, 
         "topComment": topComment,
         "commentLabels": commentLabels,
-        "toxicComments": len(toxic_comments),
+        "toxicComments": [comment for comment, score in sorted(zip(toxic_comments, toxic_scores), key=lambda x: x[1], reverse=True)][:5],
         "suggestions": response.json()['content']
     })
 
