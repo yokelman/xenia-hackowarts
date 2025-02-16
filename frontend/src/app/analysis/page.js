@@ -7,6 +7,8 @@ import Metadata from "../components/Metadata"
 import RatingGraph from "../components/RatingGraph"
 import Loader from "../components/Loader"
 import FinalRating from "../components/FinalRating"
+import Suggestion from "../components/Suggestion"
+import ToxicComments from "../components/ToxicComments"
 
 
 const page = () => {
@@ -23,7 +25,9 @@ const page = () => {
     },
     finalRating: 0,
     ratings: [],
-    topComment: null
+    topComment: null,
+    suggestions:null,
+    toxicComments:null
   })
 
   let [meta, setMeta] = useState({
@@ -96,7 +100,9 @@ const page = () => {
           commentLabels: e.commentLabels,
           finalRating: e.final_rating,
           ratings: e.ratings,
-          topComment: e.topComment
+          topComment: e.topComment,
+          suggestions:e.suggestions,
+          toxicComments:e.toxicComments
         })}
 
       })
@@ -147,6 +153,8 @@ const page = () => {
             <RatingGraph data={data.ratings} />
             <TopComment data={data.topComment} />
             <FinalRating data={data.finalRating} />
+            <Suggestion data={data.suggestions}/>
+            <ToxicComments data={data.toxicComments} />
           </div>
         </div>
       }

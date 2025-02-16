@@ -18,6 +18,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 # Parse ISO 8601 format time for video duration
 import isodate
+# Make WorqHat requests 
+import requests
 
 sentiment_pipeline = pipeline("sentiment-analysis", model="cardiffnlp/twitter-roberta-base-sentiment", top_k=None)
 classifier = pipeline("text-classification", model="unitary/toxic-bert")
@@ -25,9 +27,10 @@ app = Flask(__name__)
 CORS(app)
 
 load_dotenv()
-# YouTube API key
-API_KEY = os.getenv("API_KEY")
-youtube = build('youtube', 'v3', developerKey=API_KEY) # initializing Youtube API
+# YouTube and WorqHat API keys
+YT_API_KEY = os.getenv("YT_API_KEY")
+WH_API_KEY = os.getenv("WH_API_KEY")
+youtube = build('youtube', 'v3', developerKey=YT_API_KEY) # initializing Youtube API
 
 # POST params: video_id
 # Fetches metadata such as thumbnail, number of likes, views, etc. of a video
@@ -68,7 +71,6 @@ def metadata():
 
 # POST params: num_of_comments, video_id
 # Main analyis of video comments, returns multiple stats
-# STILL IN PROGRESS
 @app.route('/analyze', methods=['POST'])
 def analyze():
     data = request.get_json()
@@ -202,12 +204,32 @@ def analyze():
         ratings[rating-1] += 1
 
     final_rating=sum((i + 1) * count for i, count in enumerate(ratings))/sum(ratings)
+
+    # Set up the headers
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {WH_API_KEY}"
+    }
+    # Define the payload
+    data = {
+        "question": f"This is the following data for the comments of a video:\nOverall rating: {round(final_rating*100)/100} out of 10\nThere are {ratings[0]} number of comments having 1 star rating\nThere are {ratings[1]} number of comments having 2 star rating\nThere are {ratings[2]} number of comments having 3 star rating\nThere are {ratings[3]} number of comments having 4 star rating\nThere are {ratings[4]} number of comments having 5 star rating\nThere are {ratings[5]} number of comments having 6 star rating\nTherea are {ratings[6]} number of comments having 7 star rating\nThere are {ratings[7]} number of comments having 8 star rating\nThere are {ratings[8]} number of comments having 9 star rating\nThere are {ratings[9]} number of comments having 10 star rating\nThere are {commentLabels['LABEL_2']} number of comments with positive sentiment\nThere are {commentLabels['LABEL_1']} number of comments with neutral sentiment\nThere are {commentLabels['LABEL_0']} number of comments with negative sentiment\nDescribe in a very short brief way suggestions by which the video creator can improve their ratings using the above data.",
+        "model": "aicon-v4-nano-160824",
+        "randomness": 0.5,
+        "stream_data": False,
+        "training_data": "You are an obedient AI. Your job is to give suggestions for video creators to improve their ratings. You will be given data, and you must give suggestions in a very short and brief manner. You will keep your response between 100 and 200 words, and you will always be polite. You will be given ratings out of 10 and statistical data. Strictly output suggestions only.",
+        "response_type": "text",
+    }
+    # POST request
+    response = requests.post("https://api.worqhat.com/api/ai/content/v4", headers=headers, json=data)
+
     return jsonify({
         "ratings": ratings, 
         "final_rating": final_rating, 
         "timeTaken": time.time()-time1, 
         "topComment": topComment,
-        "commentLabels": commentLabels
+        "commentLabels": commentLabels,
+        "toxicComments": len(toxic_comments),
+        "suggestions": response.json()['content']
     })
 
 app.run(threaded=False)
