@@ -9,9 +9,13 @@ import Loader from "../components/Loader"
 import FinalRating from "../components/FinalRating"
 import Suggestion from "../components/Suggestion"
 import ToxicComments from "../components/ToxicComments"
+import { useToast } from "@/hooks/use-toast"
 
 
 const page = () => {
+
+  const { toast } = useToast()
+
   const [url, setUrl] = useState("")
   const [analysed, setAnalysed] = useState(false)
   const [isLoading, setLoading] = useState(false)
@@ -66,7 +70,8 @@ const page = () => {
       }
       ).then(e => e.json()).then(e => {
         if(e.status === 404){
-          alert(e.message)
+          toast({
+            title: "Please enter a valid URL!" })
         }
         if(e.status === 200){
         setMeta({
@@ -94,7 +99,8 @@ const page = () => {
       }).then(e => e.json()).then(e => {
         setLoading(false)
         if(e.status === 404){
-          alert(e.message)
+          toast({
+            title: e.message })
         }else{
         setData({
           commentLabels: e.commentLabels,
@@ -106,6 +112,11 @@ const page = () => {
         })}
 
       })
+    }else{
+      toast({
+        title: "Please enter a valid URL!" })
+
+        console.log("valid")
     }
 
 
@@ -119,7 +130,9 @@ const page = () => {
           <h1 className="text-7xl font-extralight text-center my-10">All it takes is <span className="underline decoration-purple-500">one click</span> </h1>
           <div className=" flex flex-col md:flex-row gap-2">
             <input type="text" value={url} onChange={e => setUrl(e.target.value)} className="text-lg bg-neutral-900 p-6 rounded-xl w-full" placeholder="Put the URL of the video here ...." />
-            <input type="text" value={comments} onChange={e => { e.target.value == Math.round(e.target.value) && e.target.value > 0 ? setComments(e.target.value) : alert("Please enter a positive integer") }} className="text-lg bg-neutral-900 p-6 rounded-xl " placeholder="Put the number of comments here ...." />
+            <input type="text" value={comments} onChange={e => { e.target.value == Math.round(e.target.value) && e.target.value > 0 ? setComments(e.target.value) : toast({
+          title: "The number of comments must be a positive integer!"
+        }) }} className="text-lg bg-neutral-900 p-6 rounded-xl " placeholder="Put the number of comments here ...." />
 
             <button className="p-3 px-6 bg-white text-black font-black rounded-xl text-lg hover:bg-neutral-300 transition-all" onClick={analyze}>Analyze!</button>
           </div>

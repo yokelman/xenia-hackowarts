@@ -1,22 +1,12 @@
-
-
+import { Toaster } from "@/components/ui/toaster";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+import { motionValue } from "framer-motion/dom";
 
 const lg = Poppins({
-  variable:"--font-poppins",
-  weight: '400'
-})
+  variable: "--font-poppins",
+  weight: "400",
+});
 
 export const metadata = {
   title: "Create Next App",
@@ -27,9 +17,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${lg.variable} antialiased bg-black text-white print:bg-black  bg-[url('/bg.png')] bg-center `}
+        className={`${lg.variable} antialiased bg-black text-white print:bg-black bg-[url('/bg.png')] bg-center`}
       >
-        {children}
+       
+          {children}
+        <Toaster />
       </body>
     </html>
   );
